@@ -9,10 +9,12 @@ const connectDB = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log('database connected');
+    console.log('Database connected!!!');
   } catch (err) {
-    console.log('unable to connect');
-    process.exit();
+    console.log('Unable to connect!!!: ' + err);
+    process.on('exit', function (code) {
+      console.log(`About to exit with code ${code}`);
+    });
   }
 };
 
