@@ -1,4 +1,4 @@
 {
-"mongoDBConnectURI": "mongodb+srv://sudhir:ramram77@cluster0-mpkaf.mongodb.net/<mernstack>?retryWrites=true&w=majority"
+"mongoDBConnectURI": "mongodb+srv://sudhir:my123sudhir@cluster0-mpkaf.mongodb.net/<mernstack>?retryWrites=true&w=majority"
 }
 
