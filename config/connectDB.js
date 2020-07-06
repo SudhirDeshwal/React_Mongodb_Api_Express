@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const config = require('config');
 
+
 const dbconn = config.get('mongoDBConnectURI');
 
 const connectDB = async () => {
@@ -12,9 +13,7 @@ const connectDB = async () => {
     console.log('Database connected!!!');
   } catch (err) {
     console.log('Unable to connect!!!: ' + err);
-    process.on('exit', function (code) {
-      console.log(`About to exit with code ${code}`);
-    });
+    process.exit();
   }
 };
 
