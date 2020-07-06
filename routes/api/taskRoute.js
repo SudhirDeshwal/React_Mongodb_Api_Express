@@ -2,6 +2,8 @@ const express = require('express');
 const uuid = require('uuid');
 const { check, validationResult } = require('express-validator');
 let userlist = require('../../models/Users');
+//let userlist = require('../../data/users');
+
 
 
 const router = express.Router();
@@ -46,9 +48,14 @@ router.get('/', async (req, res) => {
 
 router.get(
   '/:id',
-
+[
+  check('_id','ID is empty').not().isEmail(),
+],
   async (req, res) => {
     try {
+      if(!validationResult.is()){
+          return.sen
+      }
       const user = await userlist.findById(req.params.id);
       if (!user) {
         return res.status(404).send('user not found');
@@ -104,9 +111,9 @@ router.post(
   }
 );
 
-// // //route delete api/tasks/:id
-// // //desc delete task by id
-// // //access public
+//route delete api/USERS/:id
+//desc delete user by id
+//access public
 // router.delete('/', (req, res) => {
 //   try {
 //     // find the element
@@ -127,9 +134,21 @@ router.post(
 //   }
 // });
 
-// // // //route put  api/tasks/
-// // // //desc update task
-// // // //access public
+router.delete('/', async (req, res) => {
+  try {
+    // find the element
+    await userlist.findByIdAndRemove({ _id: req.body._id });
+
+    res.json({ msg: 'user deleted' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error'+err);
+  }
+});
+
+// route put  api/users/
+// desc update users
+// /access public
 // router.put('/', (req, res) => {
 //   try {
 //     const updateduser = userlist.find((tk) => tk.id == req.body.id);
@@ -157,5 +176,39 @@ router.post(
 //     res.status(500).send('Server error');
 //   }
 // });
+
+
+router.put(
+  '/',
+  [
+    check('Name', 'Name is required').not().isEmpty(),
+    check('Password', 'Password longer than 2 chars').isLength({
+      min: 4,
+    }),
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+      }
+
+      const user = await userlist.findById(req.body._id);
+      console.log(user);
+      if (!user) {
+        return res.status(404).send('user not found');
+      }
+      user.Name = req.body.Name;
+      user.Email = req.body.Email;
+      user.Password = req.body.Password;
+      await user.save();
+
+      res.send('user added');
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).send('Server error');
+    }
+  }
+);
 
 module.exports = router;
