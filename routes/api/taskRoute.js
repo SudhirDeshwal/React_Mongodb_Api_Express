@@ -48,14 +48,10 @@ router.get('/', async (req, res) => {
 
 router.get(
   '/:id',
-[
-  check('_id','ID is empty').not().isEmail(),
-],
+
   async (req, res) => {
     try {
-      if(!validationResult.is()){
-          return.sen
-      }
+      
       const user = await userlist.findById(req.params.id);
       if (!user) {
         return res.status(404).send('user not found');
@@ -92,7 +88,16 @@ router.get(
 router.post(
   '/',
 
-  async (req, res) => {
+  [
+    check('Email','Email is empty,Kindly enter value').not().isEmpty(),
+    check('Name','name is empty,Kindly enter value').not().isEmpty(),
+    check('Password','password is empty,Kindly enter value').not().isEmpty(),
+    check('Email','Email not valid,Kindly enter value').isEmail(),
+    check('Password','password should be of minimum 4 characters,Kindly enter value').isLength({min:4}),
+
+], 
+
+async (req, res) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -134,17 +139,28 @@ router.post(
 //   }
 // });
 
-router.delete('/', async (req, res) => {
-  try {
-    // find the element
-    await userlist.findByIdAndRemove({ _id: req.body._id });
-
-    res.json({ msg: 'user deleted' });
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error'+err);
-  }
+router.delete('/',
+[
+    check('_id','ID is empty').not().isEmpty(),
+],
+async (req,res)=>{
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+        return res.status(422).json({errors : error.array()})
+    }
+    const userfound = userlist.findById(req.body.sid);
+    if(!userfound){
+        res.json({msg:'User id not found'});
+    }
+    try{
+        await userlist.findByIdAndRemove({_id: req.body._id});
+        res.json({msg:'User is deleted'});
+    }
+    catch(err){
+        res.status(500).send('SERVER ERROR'+ err);
+    }
 });
+
 
 // route put  api/users/
 // desc update users
@@ -185,6 +201,7 @@ router.put(
     check('Password', 'Password longer than 2 chars').isLength({
       min: 4,
     }),
+
   ],
   async (req, res) => {
     try {
